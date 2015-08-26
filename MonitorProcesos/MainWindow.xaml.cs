@@ -29,29 +29,48 @@ namespace MonitorProcesos
     }
     public partial class MainWindow : MetroWindow
     {
-        [ThreadStatic]
-        static List<proceso> process = new List<proceso>();
+        List<proceso> process = new List<proceso>();
+
         public MainWindow()
         {
             Thread p = new Thread(processManager);
+            
             InitializeComponent();
+            if (procesView != null) {
+                p.Start();
+            }
             /*DataGridTextColumn f = new DataGridTextColumn();
             Binding b = new Binding("Proceso");
             f.Binding = b;
             f.Header = "Proceso";
             procesView.Columns.Add(f);*/
         }
-        public void updateData(proceso p) {
+        delegate void updateDataCallback(proceso p);
+
+        private void updateData(proceso p) {
             process.Add(p);
-            procesView.ItemsSource = null;
-            procesView.ItemsSource = process;
-        }
-        static void processManager() {
-            for (int i = 0; i < 10; i++)
-            {
-               
+            if(procesView.)
+            if (procesView.ItemsSource == null) {
+                //procesView.ItemsSource = null;
+                procesView.ItemsSource = process;
             }
             
         }
+        
+        public void processManager() {
+            for (int i = 0; i < 10; i++)
+            {
+                proceso a = new proceso() { nombre=(40*i).ToString(),estado="b",memoria=36.4};
+                updateDataCallback s = new updateDataCallback(updateData);
+
+                updateData(a);
+                Console.Write(a.nombre);
+            }
+            while (true) {
+                Console.Write(1);
+            }
+            
+        }
+
     }
 }
