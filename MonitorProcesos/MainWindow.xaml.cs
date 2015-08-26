@@ -49,10 +49,10 @@ namespace MonitorProcesos
 
         private void updateData(proceso p) {
             process.Add(p);
-            if(procesView.)
+           
             if (procesView.ItemsSource == null) {
                 //procesView.ItemsSource = null;
-                procesView.ItemsSource = process;
+                //procesView.ItemsSource = process;
             }
             
         }
