@@ -12,9 +12,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MahApps.Metro;
 using MahApps.Metro.Controls;
 using System.Collections;
 using System.Threading;
+using System.Windows.Threading;
 
 namespace MonitorProcesos
 {
@@ -23,6 +25,7 @@ namespace MonitorProcesos
     /// </summary>
     /// 
     public class proceso {
+        public int ID { get; set; }
         public string nombre { get; set; }
         public string estado { get; set; }
         public double memoria { get; set; }
@@ -30,47 +33,89 @@ namespace MonitorProcesos
     public partial class MainWindow : MetroWindow
     {
         List<proceso> process = new List<proceso>();
-
+        bool stop = false;
         public MainWindow()
         {
-            Thread p = new Thread(processManager);
             
             InitializeComponent();
-            if (procesView != null) {
-                p.Start();
-            }
-            /*DataGridTextColumn f = new DataGridTextColumn();
-            Binding b = new Binding("Proceso");
-            f.Binding = b;
-            f.Header = "Proceso";
-            procesView.Columns.Add(f);*/
+            Thread _main = new Thread(()=> Manager());
+            _main.Start();
         }
-        delegate void updateDataCallback(proceso p);
 
-        private void updateData(proceso p) {
-            process.Add(p);
-            if(procesView.)
-            if (procesView.ItemsSource == null) {
-                //procesView.ItemsSource = null;
-                procesView.ItemsSource = process;
-            }
-            
+        private void SetItem(proceso p) {
+             
         }
-        
-        public void processManager() {
-            for (int i = 0; i < 10; i++)
-            {
-                proceso a = new proceso() { nombre=(40*i).ToString(),estado="b",memoria=36.4};
-                updateDataCallback s = new updateDataCallback(updateData);
+        private void IndependientProcess() {
 
-                updateData(a);
-                Console.Write(a.nombre);
+            proceso p =  new proceso { ID= Thread.CurrentThread.ManagedThreadId,nombre = Thread.CurrentThread.GetApartmentState().ToString(),estado="Iniciando",memoria=0 };
+            try {
+                process.Add(p);
+                int lenght = process.Count - 1;
+                process[lenght].memoria = 0;
+                Random r = new Random();
+                while (true)
+                {
+                    Thread.Sleep(r.Next(1000, 3000));
+                    stop = true;
+                    ++process[lenght].memoria;
+                    process[lenght].estado = "Ejecutando";
+                    stop = false;
+
+                }
             }
+            catch (InvalidOperationException e) {
+                Console.Write(e);
+            }
+        }
+        private void ViewUpdate() {
             while (true) {
-                Console.Write(1);
+                Thread.Sleep(500);
+                if (!stop) {
+                    procesView.Dispatcher.BeginInvoke(new Action(() => {
+                        try
+                        {
+                            procesView.ItemsSource = null;
+                        }
+                        catch (InvalidOperationException e)
+                        {
+                            Console.Write(e);
+                        }
+
+                    }), DispatcherPriority.Normal, null);
+                    procesView.Dispatcher.BeginInvoke(new Action(() => {
+                        try
+                        {
+                            procesView.ItemsSource = process;
+                        }
+                        catch (InvalidOperationException e)
+                        {
+                            Console.Write(e);
+                        }
+
+                    }), DispatcherPriority.Normal, null);
+                }
+                
+                  
             }
             
         }
-
+            
+        private void Manager() {
+            
+            List<Thread> thl = new List<Thread>();
+            Thread view = new Thread(ViewUpdate);
+            view.Start();
+            Random r = new Random();
+            while (true) {
+                Thread.Sleep(r.Next(1000,30000));
+                Thread pro = new Thread(IndependientProcess);
+                thl.Add(pro);
+                pro.Start(); 
+            }
+        }
+        private void btnINI_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 }
