@@ -7,7 +7,11 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
+<<<<<<< HEAD
         Title="Monitor de  procesos." Height="350" Width="394.304" >
+=======
+        Title="Monitor de  procesos." Height="350" Width="525" >
+>>>>>>> 142440ed0434d6eeb2abd096ebbfaf887ed3cc23
     <Grid>
         <Button x:Name="btnINI" Content="Iniciar proceso" HorizontalAlignment="Left" Margin="10,281,0,0" VerticalAlignment="Top" Width="93" Style="{StaticResource AccentedSquareButtonStyle}" Click="btnINI_Click"/>
         <Button x:Name="btnDetener" Content="Detener" HorizontalAlignment="Left" Margin="135,281,0,0" VerticalAlignment="Top" Width="93" Style="{StaticResource AccentedSquareButtonStyle}"/>

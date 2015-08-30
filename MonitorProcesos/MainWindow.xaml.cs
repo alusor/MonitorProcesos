@@ -47,6 +47,7 @@ namespace MonitorProcesos
         }
         private void IndependientProcess() {
 
+<<<<<<< HEAD
             proceso p =  new proceso { ID= Thread.CurrentThread.ManagedThreadId,nombre = Thread.CurrentThread.GetApartmentState().ToString(),estado="Iniciando",memoria=0 };
             try {
                 process.Add(p);
@@ -65,6 +66,14 @@ namespace MonitorProcesos
             }
             catch (InvalidOperationException e) {
                 Console.Write(e);
+=======
+        private void updateData(proceso p) {
+            process.Add(p);
+           
+            if (procesView.ItemsSource == null) {
+                //procesView.ItemsSource = null;
+                //procesView.ItemsSource = process;
+>>>>>>> 142440ed0434d6eeb2abd096ebbfaf887ed3cc23
             }
         }
         private void ViewUpdate() {
