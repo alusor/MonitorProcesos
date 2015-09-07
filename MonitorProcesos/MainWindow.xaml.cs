@@ -57,15 +57,16 @@ namespace MonitorProcesos
             process.Add(p);
         }
         public void UpdateGrid() {
-            //procesView.ItemsSource = null;
-            
             procesView.ItemsSource = h;
             procesView.ItemsSource = process;
         }
 
         private void IndependientProcess()
         {
-            proceso p = new proceso { ID = Thread.CurrentThread.ManagedThreadId, nombre = Thread.CurrentThread.GetApartmentState().ToString(), estado = "Iniciando", memoria = 0 };
+            proceso p = new proceso {
+                ID = Thread.CurrentThread.ManagedThreadId,
+                nombre = Thread.CurrentThread.GetApartmentState().ToString(),
+                estado = "Iniciando", memoria = 0 };
             try
             {
                 Dispatcher.Invoke(new addDataCallback(this.addData),p);
@@ -77,7 +78,12 @@ namespace MonitorProcesos
                 process[lenght].estado = "Ejecutando";
                 while (true)
                 {
+
                     Thread.Sleep(r.Next(100, 2000));
+
+                    
+
+                    Thread.Sleep(r.Next(1000, 3000));
                     ++process[lenght].memoria;
                 }
             }
@@ -143,20 +149,16 @@ namespace MonitorProcesos
             
             for (int i = 0; i < thl.Count; i++)
             {
-
                 if (thl[i].ManagedThreadId == process[index].ID)
                 {
-                    //thl[i].Suspend();
                     if (!(thl[i].ThreadState == ThreadState.Suspended)) {
                         process[index].estado = "Terminado...";
                         thl[i].Abort();
                         thl.RemoveAt(i);
                         break;
                     }
-                    
                 }
             }
-          
         }
 
         private void btnPausa_Click(object sender, RoutedEventArgs e)
@@ -165,42 +167,39 @@ namespace MonitorProcesos
                 process[index].estado = "Pausado";
                 for (int i = 0; i < thl.Count; i++)
                 {
-
                     if (thl[i].ManagedThreadId == process[index].ID)
                     {
                         thl[i].Suspend();
                     }
                 }
             }
+
             
         }
+
+        
 
 
         private void procesView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            
             a = (proceso)procesView.CurrentItem;
             id = a.ID;
             index = process.IndexOf(a);
             Console.WriteLine(index);
-
         }
 
         private void bntContinue_Click(object sender, RoutedEventArgs e)
         {
-            
             if (process[index].estado.Equals("Pausado")) {
                 process[index].estado = "Ejecutando";
                 for (int i = 0; i < thl.Count; i++)
                 {
-
                     if (thl[i].ManagedThreadId == process[index].ID)
                     {
                         thl[i].Resume();
                     }
                 }
             }
-
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
