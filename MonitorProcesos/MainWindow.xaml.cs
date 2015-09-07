@@ -31,6 +31,7 @@ namespace MonitorProcesos
         public string nombre { get; set; }
         public string estado { get; set; }
         public double memoria { get; set; }
+        public int time { get; set; }
     }
     public partial class MainWindow : MetroWindow
     {
@@ -42,6 +43,7 @@ namespace MonitorProcesos
         int id;
         int index=0;
         proceso a = new proceso();
+        Thread upda;
         public MainWindow()
         {
             
@@ -70,15 +72,12 @@ namespace MonitorProcesos
                 int lenght = process.Count - 1;
                 process[lenght].memoria = 0;
                 Random r = new Random();
+                
                 Thread.Sleep(r.Next(1000, 3000));
                 process[lenght].estado = "Ejecutando";
                 while (true)
                 {
-                    
-
-                    Thread.Sleep(r.Next(1000, 3000));
-                    //if (!process[lenght].estado.Equals("Pausado"))
-                    //lenght = process.Count - 1;
+                    Thread.Sleep(r.Next(100, 2000));
                     ++process[lenght].memoria;
                 }
             }
@@ -100,13 +99,15 @@ namespace MonitorProcesos
 
         private void Manager() {
             Random r = new Random();
-            Thread upda = new Thread(viewUpdater);
+            upda = new Thread(viewUpdater);
             upda.Start();
             while (true) {
-                Thread.Sleep(r.Next(1000,30000));
+                Thread.Sleep(r.Next(100,3000));
                 Thread pro = new Thread(IndependientProcess);
                 thl.Add(pro);
-                pro.Start(); 
+                thl.Last().Start();
+                //thl.Last().Suspend();
+                //pro.Suspend(); 
             }
         }
         private void btnINI_Click(object sender, RoutedEventArgs e)
@@ -119,11 +120,20 @@ namespace MonitorProcesos
         private void MetroWindow_Closed(object sender, EventArgs e)
         {
             App.Current.Shutdown();
-            
+            for (int i = 0; i < thl.Count; i++)
+            {
+
+               
+                        thl[i].Abort();
+                  
+            }
+            upda.Abort();
+            _main.Abort();
+
         }
 
         async private void about_Click(object sender, RoutedEventArgs e)
-        {
+            {
             await this.ShowMessageAsync("Acerca de", "Eduardo Velez Santigo\nWPF  .NET 4.5\neduardo@alusorstroke.com\nMonitor de  procesos.");
         }
 
@@ -165,10 +175,6 @@ namespace MonitorProcesos
             
         }
 
-        private void procesView_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            //Console.WriteLine("click");
-        }
 
         private void procesView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -194,6 +200,19 @@ namespace MonitorProcesos
                     }
                 }
             }
+
+        }
+
+        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            App.Current.Shutdown();
+            for (int i = 0; i < thl.Count; i++)
+            {
+                thl[i].Abort();
+
+            }
+            upda.Abort();
+            _main.Abort();
 
         }
     }
